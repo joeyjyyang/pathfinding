@@ -82,8 +82,8 @@ private:
     AdjacencyList<TId, TWeight> graph_;
 };
 
-template <typename TId, typename TWeight>
-void printGraph(const Graph<TId, TWeight>& graph)
+template <typename TIdFriend, typename TWeightFriend>
+void printGraph(const Graph<TIdFriend, TWeightFriend>& graph)
 {
     for (const auto& [src_id, edge_list] : graph.graph_)
     {
