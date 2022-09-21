@@ -20,6 +20,16 @@ public:
         grid_[indices.first][indices.second] = value;
     }
 
+    void setBlocked(const VertexIndices indices)
+    {
+        setVertex(indices, 'b');
+    }
+
+    bool isBlocked(const VertexIndices indices)
+    {
+        return (grid_[indices.first][indices.second] == 'b' ? true : false);
+    }
+
     // Important to not return by reference here, since grid dimensions are temporary variables.
     const std::pair<const unsigned int, const unsigned int> getDimensions() const
     {

@@ -61,29 +61,33 @@ public:
             {
                 const auto adj_vertex_row = current_row + move.first;
                 const auto adj_vertex_col = current_col + move.second;
+                VertexIndices adj_indices = {adj_vertex_row, adj_vertex_col};
 
                 // For grid, make sure adjacent vertex is within bounds.
                 if (adj_vertex_row >= 0 && adj_vertex_row < num_rows && adj_vertex_col >= 0 && adj_vertex_col < num_cols)
                 {
-                    // 7. Make sure adjacent vertex is unvisited.
-                    if (!visited_[adj_vertex_row][adj_vertex_col])
+                    // For grid, make sure adjacent vertex is not blocked.
+                    if (!grid_.isBlocked({adj_vertex_row, adj_vertex_col}))
                     {
-                        // 8. Get adjacent vertex's current shortest distance to source vertex.
-                        // Compute new distance from source vertex, through current vertex, to adjacent vertex.
-                        auto shortest_distance = distances_[adj_vertex_row][adj_vertex_col];
-                        auto new_distance = current_distance + 1; // Edge weight between adjacent vertices is always 1.
-
-                        // 9. Compare adjacent vertex's current shortest distance to new distance from source vertex, through current vertex, to adjacent vertex.
-                        if (new_distance < shortest_distance)
+                        // 7. Make sure adjacent vertex is unvisited.
+                        if (!visited_[adj_vertex_row][adj_vertex_col])
                         {
-                            // 10. If new shortest distance for adjacent vertex to source vertex:
-                            // Update shortest distance for adjacent vertex.
-                            // Set previous vertex for adjacent vertex as current vertex.
-                            // Add adjacent vertex and shortest distance to priority queue.
-                            distances_[adj_vertex_row][adj_vertex_col] = new_distance;
-                            previous_[adj_vertex_row][adj_vertex_col] = current_indices;
-                            VertexIndices indices = {adj_vertex_row, adj_vertex_col};
-                            priority_q_.emplace(new_distance, indices);
+                            // 8. Get adjacent vertex's current shortest distance to source vertex.
+                            // Compute new distance from source vertex, through current vertex, to adjacent vertex.
+                            auto shortest_distance = distances_[adj_vertex_row][adj_vertex_col];
+                            auto new_distance = current_distance + 1; // Edge weight between adjacent vertices is always 1.
+
+                            // 9. Compare adjacent vertex's current shortest distance to new distance from source vertex, through current vertex, to adjacent vertex.
+                            if (new_distance < shortest_distance)
+                            {
+                                // 10. If new shortest distance for adjacent vertex to source vertex:
+                                // Update shortest distance for adjacent vertex.
+                                // Set previous vertex for adjacent vertex as current vertex.
+                                // Add adjacent vertex and shortest distance to priority queue.
+                                distances_[adj_vertex_row][adj_vertex_col] = new_distance;
+                                previous_[adj_vertex_row][adj_vertex_col] = current_indices;
+                                priority_q_.emplace(new_distance, adj_indices);
+                            }
                         }
                     }
                 }
@@ -174,13 +178,22 @@ void printPath(const std::vector<VertexIndices>& path)
 int main(int argc, char* argv[])
 {
     {
-        constexpr VertexIndices SRC_INDICES{1, 2};
-        constexpr VertexIndices DEST_INDICES{4, 4};
+        constexpr VertexIndices SRC_INDICES{0, 2};
+        constexpr VertexIndices DEST_INDICES{2, 0};
 
-        Grid<char> grid(5, 5, '-');
-        
+        // Set to 'o' for non-blocked..
+        Grid<char> grid(5, 5, 'o');
+
         grid.setVertex(SRC_INDICES, 's');
         grid.setVertex(DEST_INDICES, 'd');
+        // Set blocked vertices.
+        grid.setBlocked({1, 0});
+        grid.setBlocked({1, 1});
+        grid.setBlocked({1, 2});
+        grid.setBlocked({1, 3});
+        grid.setBlocked({2, 1});
+        grid.setBlocked({2, 2});
+        grid.setBlocked({2, 3});
 
         std::cout << "-----------------------\n";
         printGrid(grid);
