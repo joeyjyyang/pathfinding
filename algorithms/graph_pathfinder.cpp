@@ -3,13 +3,14 @@
 #include <queue>
 #include <vector>
 
-#include "../graph/graph.cpp"
+#include "../data_structures/graph.cpp"
+#include "../helpers/heuristics.cpp"
 
 template <typename TId, typename TWeight>
-class Dijkstra
+class GraphPathfinder
 {
 public:
-    Dijkstra(const Graph<TId, TWeight>& graph, const VertexId<TId> src_id, const VertexId<TId> dest_id) : graph_(graph), src_id_(src_id), dest_id_(dest_id)
+    GraphPathfinder(const Graph<TId, TWeight>& graph, const VertexId<TId> src_id, const VertexId<TId> dest_id) : graph_(graph), src_id_(src_id), dest_id_(dest_id)
     {
     }
 
@@ -46,10 +47,12 @@ public:
             const auto current_id = current_vertex.second;
 
             // Optional: early exit if only desire shortest path to destination vertex.
-            //if (current_id == dest_id_)
-            //{
-            //    break;
-            //}
+            // Required for A* and Greedy Best First Search.
+            // Optional for Dijkstra.
+            if (current_id == dest_id_)
+            {
+                break;
+            }
 
             // 5. Mark vertex as visited.
             visited_[current_id] = true;
@@ -76,7 +79,10 @@ public:
                         // Add adjacent vertex and shortest distance to priority queue.
                         distances_[adj_id] = new_distance;
                         previous_[adj_id] = current_id;
-                        priority_q_.emplace(new_distance, adj_id);
+
+                        double priority = new_distance;
+
+                        priority_q_.emplace(priority, adj_id);
                     }
                 }
             }
@@ -102,28 +108,37 @@ public:
 
     void printHelpers() const
     {
-        std::cout << "-------HELPERS---------\n";
-        std::cout << "Visited:\n";
+        std::cout << "------------------------------\n";
+        std::cout << "--------- Visited ------------\n";
+        std::cout << "------------------------------\n";
 
         for (const auto& [key, val] : visited_)
         {
             std::cout << key << ": " << val << ", ";
         }
+
         std::cout << "\n";
-        std::cout << "Shortest Distances:\n";
+
+        /*std::cout << "------------------------------\n";
+        std::cout << "----- Shortest Distances -----\n";
+        std::cout << "------------------------------\n";
 
         for (const auto& [key, val] : distances_)
         {
             std::cout << key << ": " << val << ", ";
         }
+
         std::cout << "\n";
-        std::cout << "Previous:\n";
+
+        std::cout << "------------------------------\n";
+        std::cout << "--------- Previous -----------\n";
+        std::cout << "------------------------------\n";
 
         for (const auto& [key, val] : previous_)
         {
             std::cout << key << ": " << val << ", ";
         }
-        std::cout << "\n";
+        std::cout << "\n";*/
     }
 
 private:
@@ -168,11 +183,11 @@ int main(int argc, char* argv[])
         printGraph(graph);
         std::cout << "-----------------------\n";
 
-        Dijkstra<char, unsigned int> dijkstra(graph, SRC_ID, DEST_ID);
-        dijkstra.run();
-        dijkstra.printHelpers();
+        GraphPathfinder<char, unsigned int> graph_pathfinder(graph, SRC_ID, DEST_ID);
+        graph_pathfinder.run();
+        graph_pathfinder.printHelpers();
 
-        const auto& shortest_path = dijkstra.getShortestPath();
+        const auto& shortest_path = graph_pathfinder.getShortestPath();
         printPath(shortest_path);
     }
 
@@ -201,11 +216,11 @@ int main(int argc, char* argv[])
         printGraph(graph);
         std::cout << "-----------------------\n";
 
-        Dijkstra<unsigned int, unsigned int> dijkstra(graph, SRC_ID, DEST_ID);
-        dijkstra.run();
-        dijkstra.printHelpers();
+        GraphPathfinder<unsigned int, unsigned int> graph_pathfinder(graph, SRC_ID, DEST_ID);
+        graph_pathfinder.run();
+        graph_pathfinder.printHelpers();
 
-        const auto& shortest_path = dijkstra.getShortestPath();
+        const auto& shortest_path = graph_pathfinder.getShortestPath();
         printPath(shortest_path);
     }
 
