@@ -50,7 +50,7 @@ void printGrid(const Grid<TIdFriend>& grid)
     {
         for (unsigned int c_i = 0; c_i < grid.grid_[0].size(); c_i++)
         {
-            std::cout << grid.grid_[r_i][c_i];
+            std::cout << grid.grid_[r_i][c_i] << " ";
         }
         
         std::cout << "\n";
